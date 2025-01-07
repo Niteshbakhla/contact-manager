@@ -45,16 +45,33 @@ exports.getContact = asyncHandler(async (req, res) => {
 
 //Update contact
 // route put  /api/contacts/:id
-exports.updateContact = asyncHandler(
-            (req, res) => {
-                        res.status(200).json({ message: `Update contact for ${req.params.id}` })
+exports.updateContact = asyncHandler(async (req, res) => {
+            const contact = await Contact.findById(req.params.id);
+            if (!contact) {
+                        res.status(404);
+                        throw new Error("Contact not found")
             }
-)
+            const updateContact = await Contact.findByIdAndUpdate(
+                        req.params.id,
+                        req.body,
+                        { new: true }
+            )
+            if (!updateContact) {
+                        es.status(404);
+                        throw new Error("Contact not found")
+            }
+            res.status(200).json({ updateContact })
+})
 
 //Delete contact
 // route Delete  /api/contacts/:id
-exports.deleteContact = asyncHandler(
-            (req, res) => {
-                        res.status(200).json({ message: `Delete contact for ${req.params.id}` })
+exports.deleteContact = asyncHandler(async (req, res) => {
+            const contact = await Contact.findById(req.params.id);
+            if (!contact) {
+                        res.status(404);
+                        throw new Error("Contact not found")
             }
-)
+
+            await Contact.findByIdAndDelete(req.params.id)
+            res.status(200).json({ contact })
+})
